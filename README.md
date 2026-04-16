@@ -141,7 +141,7 @@ pipeline {
  stage('Checkout Git') {
  steps {
  git branch: 'main',
- url: 'https://github.com/balaganeshn/simple-maven-app'
+ url: 'https://github.com/KaviyasriSankar/Simple-Maven-Application-1.git'
  }
  }
  stage('Build and Test') {
@@ -226,45 +226,45 @@ After that open Jenkins-> In Jenkins Setting --> Credentials -> system global cl
 add Credentials – kind:Secret file –>file(choose config)->id kuberconfig->description: Kubernetes crendentials-> and click create
 After this : Create New Item -> Pipeline Paste the code in pipeline script - Update URL of GIT repository - Make sure credentialsId: “dockerhub” username
 Pipeline: 
-
 pipeline {
-agent any
-environment {
-DOCKER_IMAGE = "swetab84/html-demo"
-}
-stages {
-    stage('Clone Code') {
-steps {
-git branch: 'main',
-url: 'https://github.com/swetab-max/docker-example.git'
-}
-}
-stage('Build Docker Image') {
-steps {
-bat 'docker build -t %DOCKER_IMAGE% .'
-}
-}
-stage('Push Image') {
-steps {
-withCredentials([usernamePassword(credentialsId: 'dockerhub',
-usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-bat 'docker login -u %USER% -p %PASS%'
-bat 'docker push %DOCKER_IMAGE%'
-}
-}
-}
-stage('Deploy to Kubernetes') {
-steps {
-withCredentials([file(credentialsId: 'kuberconfig', variable:
-'KUBECONFIG')]) {
-bat '''
-set KUBECONFIG=%KUBECONFIG%
-kubectl apply -f deployment.yaml --validate=false
-'''
-}
-}
-}
-}
+    agent any
+    environment {
+        DOCKER_IMAGE = "kaviyasankar2006/html-demo"
+    }
+    stages {
+        stage('Clone Code') {
+            steps {
+                git branch: 'main',
+                url: 'https://github.com/prithiyangadevi-r/dockers.git'
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                bat "docker build -t %DOCKER_IMAGE% ."
+            }
+        }
+        stage('Push Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub',
+                usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    bat '''
+                    echo %PASS% | docker login -u %USER% --password-stdin
+                    docker push %DOCKER_IMAGE%
+                    '''
+                }
+            }
+        }
+        stage('Deploy to Kubernetes') {
+            steps {
+                withCredentials([file(credentialsId: 'kuberconfig', variable: 'KUBECONFIG')]) {
+                    bat '''
+                    set KUBECONFIG=%KUBECONFIG%
+                    kubectl apply -f deployment.yaml --validate=false
+                    '''
+                }
+            }
+        }
+    }
 }
 and then click build now and check console output
 after this open docker: builders,containers,images->take all screenshot
